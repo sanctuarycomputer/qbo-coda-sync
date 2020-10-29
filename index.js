@@ -10,7 +10,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-// Heroku, ENV vars, Procfile
 const Constants = {
   CODA_API_KEY: process.env.CODA_API_KEY,
   CONSUMER_KEY: process.env.CONSUMER_KEY,
