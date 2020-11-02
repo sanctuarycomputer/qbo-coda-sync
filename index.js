@@ -15,7 +15,7 @@ const Constants = {
   CONSUMER_KEY: process.env.CONSUMER_KEY,
   CONSUMER_SECRET: process.env.CONSUMER_SECRET,
   REALM_ID: process.env.REALM_ID,
-  OAUTH_ACCESS_TOKEN: "__WILL_REFRESH__",
+  OAUTH_ACCESS_TOKEN: process.env.OAUTH_ACCESS_TOKEN,
   OAUTH_REFRESH_TOKEN: process.env.OAUTH_REFRESH_TOKEN,
   MONTH_NAMES:  [
     "January",
@@ -271,7 +271,7 @@ const loadAndUpsertAggregateDataForYear = async (table, rows, year = 2020) => {
 
   try {
     // We run this once a day, so we need a new access token
-    await refreshQBOAccessToken();
+    const token = await refreshQBOAccessToken();
 
     // Just here to remind me how to pull stuff
     //const doc = await coda.getDoc('jSPYRcqGSS');
