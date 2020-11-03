@@ -270,7 +270,6 @@ const loadAndUpsertAggregateDataForYear = async (table, rows, year = 2020) => {
   });
 
   try {
-    console.log(process.env);
     // We run this once a day, so we need a new access token
     const token = await refreshQBOAccessToken();
 
