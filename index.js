@@ -117,7 +117,8 @@ const YearlyMappings = {
   "Gross COGS": "Total Cost of Goods Sold",
   "Profit Share Pool": "[SC] Profit Share, Bonuses & Misc",
   "Carbon Offsets": "[SC] Carbon Offsets",
-  "Charitable Donations": "[SC] Charitable Donations"
+  "Charitable Donations": "[SC] Charitable Donations",
+  "Reinvestment": "[SC] Reinvestment"
 };
 
 const upsertDataForMonth = async (table, rows, month = 0, year = 2020, qboData) => {
@@ -234,6 +235,12 @@ const loadAndUpsertAggregateDataForYear = async (table, rows, year = 2020) => {
     profitShare[rawProfitShareData.ColData[0].value] = rawProfitShareData.ColData[1].value;
   };
 
+  const rawReinvestmentData = rawCOGSData.Rows.Row.find(r => (r.ColData && r.ColData[0].value) === "[SC] Reinvestment");
+  const reinvestment = {};
+  if (rawReinvestmentData) {
+    reinvestment[rawReinvestmentData.ColData[0].value] = rawReinvestmentData.ColData[1].value;
+  };
+
   const cogs = {
     [rawCOGSData.Summary.ColData[0].value]: rawCOGSData.Summary.ColData[1].value
   };
@@ -257,7 +264,8 @@ const loadAndUpsertAggregateDataForYear = async (table, rows, year = 2020) => {
     ...income,
     ...cogs,
     ...expenses,
-    ...profitShare
+    ...profitShare,
+    ...reinvestment
   };
 
   await upsertDataForYear(table, rows, year, allData);
