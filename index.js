@@ -177,7 +177,7 @@ const loadAndUpsertDataForMonth = async (table, rows, month = 0, year = 2020) =>
     data.Rows.Row.find(r => r.group === 'COGS');
 
   const rawPayrollData =
-    rawCOGSData.Rows.Row.find(r => r.Summary.ColData[0].value === "Total [SC] Payroll");
+    rawCOGSData.Rows.Row.find(r => r.Summary && r.Summary.ColData[0].value === "Total [SC] Payroll");
   const payroll = rawPayrollData ? rawPayrollData.Rows.Row.reduce((acc, r) => {
     acc[r.ColData[0].value] = r.ColData[1].value;
     return acc;
@@ -195,7 +195,7 @@ const loadAndUpsertDataForMonth = async (table, rows, month = 0, year = 2020) =>
   }) : {};
 
   const rawSubcontractorsData =
-    rawCOGSData.Rows.Row.find(r => r.Summary.ColData[0].value === "Total [SC] Subcontractors");
+    rawCOGSData.Rows.Row.find(r => r.Summary && r.Summary.ColData[0].value === "Total [SC] Subcontractors");
   const subcontractors = rawSubcontractorsData ? rawSubcontractorsData.Rows.Row.reduce((acc, r) => {
     acc[r.ColData[0].value] = r.ColData[1].value;
     return acc;
@@ -229,21 +229,23 @@ const loadAndUpsertAggregateDataForYear = async (table, rows, year = 2020) => {
 
   const rawCOGSData = data.Rows.Row.find(r => (r.group || '').toLowerCase() === 'cogs');
 
-  const rawProfitShareData = rawCOGSData.Rows.Row.find(r => (r.ColData && r.ColData[0].value) === "[SC] Profit Share, Bonuses & Misc");
   const profitShare = {};
-  if (rawProfitShareData) {
-    profitShare[rawProfitShareData.ColData[0].value] = rawProfitShareData.ColData[1].value;
-  };
-
-  const rawReinvestmentData = rawCOGSData.Rows.Row.find(r => (r.ColData && r.ColData[0].value) === "[SC] Reinvestment");
   const reinvestment = {};
-  if (rawReinvestmentData) {
-    reinvestment[rawReinvestmentData.ColData[0].value] = rawReinvestmentData.ColData[1].value;
-  };
+  const cogs = {};
 
-  const cogs = {
-    [rawCOGSData.Summary.ColData[0].value]: rawCOGSData.Summary.ColData[1].value
-  };
+  if (rawCOGSData) {
+    const rawProfitShareData = rawCOGSData.Rows.Row.find(r => (r.ColData && r.ColData[0].value) === "[SC] Profit Share, Bonuses & Misc");
+    if (rawProfitShareData) {
+      profitShare[rawProfitShareData.ColData[0].value] = rawProfitShareData.ColData[1].value;
+    };
+
+    const rawReinvestmentData = rawCOGSData.Rows.Row.find(r => (r.ColData && r.ColData[0].value) === "[SC] Reinvestment");
+    if (rawReinvestmentData) {
+      reinvestment[rawReinvestmentData.ColData[0].value] = rawReinvestmentData.ColData[1].value;
+    };
+
+    cogs[rawCOGSData.Summary.ColData[0].value] = rawCOGSData.Summary.ColData[1].value;
+  }
 
   const rawExpenseData = data.Rows.Row.find(r => (r.group || '').toLowerCase() === 'expenses');
   const expenses = {
