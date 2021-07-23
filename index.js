@@ -109,6 +109,12 @@ const MonthlyMappings = {
   "XXIX Payroll": "[SC] Brand Design Payroll",
   "XXIX Benefits": "[SC] Brand Design Benefits, Contributions & Tax",
   "XXIX Subcontractors": "[SC] Brand Design Subcontractors",
+
+  "Index Revenue": "[SC] Community Sales",
+  "Index Supplies & Materials": "[SC] Community Supplies & Materials",
+  "Index Payroll": "[SC] Community Payroll",
+  "Index Benefits": "[SC] Community Benefits, Contributions & Tax",
+  "Index Subcontractors": "[SC] Community Subcontractors",
 };
 
 const YearlyMappings = {
@@ -185,6 +191,15 @@ const loadAndUpsertDataForMonth = async (table, rows, month = 0, year = 2020) =>
     [rawPayrollData.Summary.ColData[0].value]: rawPayrollData.Summary.ColData[1].value
   }) : {};
 
+  const rawSuppliesData =
+    rawCOGSData.Rows.Row.find(r => r.Summary && r.Summary.ColData[0].value === "Total [SC] Supplies & Materials");
+  const supplies = rawSuppliesData ? rawSuppliesData.Rows.Row.reduce((acc, r) => {
+    acc[r.ColData[0].value] = r.ColData[1].value;
+    return acc;
+  }, {
+    [rawSuppliesData.Summary.ColData[0].value]: rawSuppliesData.Summary.ColData[1].value
+  }) : {};
+
   const rawBenefitsData =
     rawCOGSData.Rows.Row.find(r => r.Summary.ColData[0].value === "Total [SC] Benefits, Contributions & Tax");
   const benefits = rawBenefitsData ? rawBenefitsData.Rows.Row.reduce((acc, r) => {
@@ -211,6 +226,7 @@ const loadAndUpsertDataForMonth = async (table, rows, month = 0, year = 2020) =>
   const allData = {
     ...income,
     ...payroll,
+    ...supplies,
     ...benefits,
     ...subcontractors,
     ...expenses
